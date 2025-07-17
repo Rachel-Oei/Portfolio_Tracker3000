@@ -13,7 +13,7 @@ def add_assets(portfolio):
 
             # Print table header
             print("\nCurrent Portfolio Overview:")
-            print(f"{'Ticker':<10} {'Asset Class':<15} {'Sector':<30} {'Market Cap':<10} {'Qty':<5} {'Purchase Price':<15} {'Current Price':<15} {'Daily Return %':<15}")
+            print(f"{'Ticker':<10} {'Asset Class':<15} {'Sector':<30} {'Mkt Cap':<10} {'Qty':<5} {'Purchase Price':<15} {'Current Price':<15} {'Daily Return %':<15}")
             print("-" * 115)
 
             # Print one row per asset
