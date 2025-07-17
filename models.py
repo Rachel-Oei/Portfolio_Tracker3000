@@ -9,8 +9,9 @@ class Asset:
         self.market_cap = None
         self.daily_return = None
         info = yf.Ticker(ticker).info
+        self.name = info.get("longName", info.get("shortName", "UNKNOWN"))
         self.asset_class = info.get("quoteType", "UNKNOWN")
-        self.sector = info.get("sector", "UNKNOWN")
+        self.sector = info.get("sector", self.name)
         self.market_cap = info.get("marketCap", None)
 
     def update_close(self):
@@ -80,7 +81,7 @@ class Portfolio:
         print("Portfolio Summary:")
         for asset in self.assets:
             weight = self.weights().get(asset.ticker, 0)
-            market_cap = asset.market_cap if asset.market_cap is not None else "N/A"
+            market_cap = asset.market_cap if asset.market_cap is not None else 0
             daily_return = f"{asset.daily_return:.2f}%" if asset.daily_return is not None else "N/A"
             
             print(
