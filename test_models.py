@@ -1,13 +1,9 @@
-from models import Asset
+from models import Asset, Portfolio
 
 def test_asset():
-    # Create an asset instance
     asset = Asset("AAPL", 10, 150)
-    
-    # Update the adjusted close price from Yahoo Finance
     asset.update_close()
-    
-    # Print relevant info to verify functionality
+
     print(f"Ticker: {asset.ticker}")
     print(f"Sector: {asset.sector}")
     print(f"Asset class: {asset.asset_class}")
@@ -17,5 +13,15 @@ def test_asset():
     print(f"Transaction value: ${asset.transaction_value():.2f}")
     print(f"Current value: ${asset.current_value():.2f}")
 
+def test_portfolio():
+    portfolio = Portfolio()
+    asset1 = Asset("AAPL", 10, 150)
+    asset2 = Asset("MSFT", 5, 200)
+    portfolio.add_asset(asset1)
+    portfolio.add_asset(asset2)
+    portfolio.update_all_closes()
+    portfolio.summary()
+    
 if __name__ == "__main__":
     test_asset()
+    test_portfolio()
