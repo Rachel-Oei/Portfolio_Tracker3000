@@ -18,7 +18,7 @@ def test_asset():
 def test_portfolio():
     portfolio = Portfolio()
     asset1 = Asset("AAPL", 10, 150)
-    asset2 = Asset("MSFT", 5, 200)
+    asset2 = Asset("BND", 5, 200)
     portfolio.add_asset(asset1)
     portfolio.add_asset(asset2)
     portfolio.update_all_closes()
