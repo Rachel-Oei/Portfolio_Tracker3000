@@ -64,7 +64,7 @@ class Portfolio:
                 f"Quantity={asset.quantity}, "
                 f"Current Value=${asset.current_value() or 0:.2f}, "
                 f"Weight={weight:.2%}, "
-                f"Market Cap={int(market_cap/1000000000)}, "
+                f"Market Cap=${int(market_cap/1000000000)}B, "
                 f"Daily Return={daily_return}"
             )
         print(f"Total Cost: ${self.total_cost():.2f}")
