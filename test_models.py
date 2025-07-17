@@ -7,6 +7,8 @@ def test_asset():
     print(f"Ticker: {asset.ticker}")
     print(f"Sector: {asset.sector}")
     print(f"Asset class: {asset.asset_class}")
+    print(f"Market Cap: {asset.market_cap}")
+    print(f"Daily Return={asset.daily_return:.2f}%, ")
     print(f"Quantity: {asset.quantity}")
     print(f"Purchase price: ${asset.purchase_price}")
     print(f"Latest adjusted close price: ${asset.close}")
