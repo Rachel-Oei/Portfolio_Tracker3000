@@ -12,7 +12,7 @@ class Asset:
     def update_adjusted_close(self):
         data = yf.Ticker(self.ticker)
         hist = data.history(period="max")  
-        adj_close_series = hist['Adj Close']      
+        adj_close_series = hist['Close']     
         self.adj_close = adj_close_series.iloc[-1] 
         
     def transaction_value(self):
