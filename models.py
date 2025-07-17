@@ -6,14 +6,21 @@ class Asset:
         self.quantity = quantity
         self.purchase_price = purchase_price
         self.close = None
+        self.market_cap = None
+        self.daily_return = None
         info = yf.Ticker(ticker).info
         self.asset_class = info.get("quoteType", "UNKNOWN")
         self.sector = info.get("sector", "UNKNOWN")
+        self.market_cap = info.get("marketCap", None)
 
     def update_close(self):
         data = yf.Ticker(self.ticker)
         hist = data.history(period="max")  
-        close_series = hist['Close']     
+        close_series = hist['Close']    
+        if len(close_series) >= 2:
+            self.daily_return = (close_series.iloc[-1] - close_series.iloc[-2]) / close_series.iloc[-2] * 100
+        else:
+            self.daily_return = 0.0
         self.close = close_series.iloc[-1] 
         
     def transaction_value(self):
