@@ -52,11 +52,35 @@ class Portfolio:
         total = self.total_value()
         return {asset.ticker: (asset.current_value() or 0) / total for asset in self.assets if total > 0}
 
+    def weights_by_asset_class(self):
+        total = self.total_value()
+        weights = {}
+        if total == 0:
+            return weights
+        class_sums = {}
+        for asset in self.assets:
+            class_sums[asset.asset_class] = class_sums.get(asset.asset_class, 0) + (asset.current_value() or 0)
+        for asset_class, value_sum in class_sums.items():
+            weights[asset_class] = value_sum / total
+        return weights
+
+    def weights_by_sector(self):
+        total = self.total_value()
+        weights = {}
+        if total == 0:
+            return weights
+        sector_sums = {}
+        for asset in self.assets:
+            sector_sums[asset.sector] = sector_sums.get(asset.sector, 0) + (asset.current_value() or 0)
+        for sector, value_sum in sector_sums.items():
+            weights[sector] = value_sum / total
+        return weights
+
     def summary(self):
         print("Portfolio Summary:")
         for asset in self.assets:
             weight = self.weights().get(asset.ticker, 0)
-            market_cap = asset.market_cap if asset.market_cap != "UNKNOWN" else "N/A"
+            market_cap = asset.market_cap if asset.market_cap is not None else "N/A"
             daily_return = f"{asset.daily_return:.2f}%" if asset.daily_return is not None else "N/A"
             
             print(
@@ -70,3 +94,10 @@ class Portfolio:
         print(f"Total Cost: ${self.total_cost():.2f}")
         print(f"Total Value: ${self.total_value():.2f}")
 
+        print("Weights by Asset Class:")
+        for asset_class, weight in self.weights_by_asset_class().items():
+            print(f"{asset_class}: {weight:.2%}")
+
+        print("\nWeights by Sector:")
+        for sector, weight in self.weights_by_sector().items():
+            print(f"{sector}: {weight:.2%}")
