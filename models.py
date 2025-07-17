@@ -11,7 +11,7 @@ class Asset:
         self.asset_class = info.get("quoteType", "UNKNOWN")
         self.sector = info.get("sector", "UNKNOWN")
 
-    def update_adjusted_close(self):
+    def update_close(self):
         data = yf.Ticker(self.ticker)
         hist = data.history(period="max")  
         close_series = hist['Close']     
