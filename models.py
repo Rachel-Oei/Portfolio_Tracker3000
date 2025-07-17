@@ -55,6 +55,18 @@ class Portfolio:
     def summary(self):
         print("Portfolio Summary:")
         for asset in self.assets:
-            print(f"{asset.ticker}: Quantity={asset.quantity}, Current Value=${asset.current_value() or 0:.2f}, Weight={self.weights().get(asset.ticker, 0):.2%}")
+            weight = self.weights().get(asset.ticker, 0)
+            market_cap = asset.market_cap if asset.market_cap != "UNKNOWN" else "N/A"
+            daily_return = f"{asset.daily_return:.2f}%" if asset.daily_return is not None else "N/A"
+            
+            print(
+                f"{asset.ticker}: "
+                f"Quantity={asset.quantity}, "
+                f"Current Value=${asset.current_value() or 0:.2f}, "
+                f"Weight={weight:.2%}, "
+                f"Market Cap={market_cap}, "
+                f"Daily Return={daily_return}"
+            )
         print(f"Total Cost: ${self.total_cost():.2f}")
         print(f"Total Value: ${self.total_value():.2f}")
+
