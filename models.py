@@ -99,6 +99,7 @@ class Portfolio:
         for asset_class, weight in self.weights_by_asset_class().items():
             print(f"{asset_class}: {weight:.2%}")
 
-        print("\nWeights by Sector:")
+        print("Weights by Sector:")
         for sector, weight in self.weights_by_sector().items():
             print(f"{sector}: {weight:.2%}")
+        
