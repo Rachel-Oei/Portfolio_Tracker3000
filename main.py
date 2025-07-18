@@ -21,6 +21,22 @@ def add_assets(portfolio):
                 daily_return = f"{a.daily_return:.2f}%" if a.daily_return is not None else "N/A"
                 print(f"{a.ticker:<10} {a.asset_class:<15} {a.sector:<30} {market_cap:<10} {a.quantity:<5} ${a.purchase_price:<14.2f} {current_price:<15} {daily_return:<15}")
             print()
+
+            def print_weight_table(title, weight_dict):
+                print(f"\n{title}")
+                print(f"{'Name':<25} {'Weight %':<10} {'Bar':<50}")
+                print("-" * 85)
+
+                colors = ["\033[90m", "\033[30m"]  # dark gray, black
+                reset = "\033[0m"
+
+                for name, weight in sorted(weight_dict.items(), key=lambda x: -x[1]):
+                    bar = '█' * int(weight * 50)  # 50 chars wide
+                    print(f"{name:<25} {weight * 100:>6.2f}%   {bar}")
+            
+            print_weight_table("Weights by Asset", portfolio.weights())
+            print_weight_table("Weights by Asset Class", portfolio.weights_by_asset_class())
+            print_weight_table("Weights by Sector", portfolio.weights_by_sector())
         else:
             break
 
