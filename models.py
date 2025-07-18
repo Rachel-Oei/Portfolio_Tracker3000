@@ -11,7 +11,7 @@ class Asset:
         info = yf.Ticker(ticker).info
         self.name = info.get("longName", info.get("shortName", "UNKNOWN"))
         self.asset_class = info.get("quoteType", "UNKNOWN")
-        self.sector = info.get("sector", self.name)
+        self.sector = info.get("sector", self.name) # if sector is unknown, use long/ short name of ticker
         self.market_cap = info.get("marketCap", None)
 
     def update_close(self):
