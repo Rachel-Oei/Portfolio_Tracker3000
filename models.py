@@ -87,6 +87,27 @@ class Portfolio:
         self.add_asset(asset)
         print_asset_table(self)
 
+    def print_total_cost_and_value(self):
+        print("\nCalculation for Total Cost:")
+        total_cost = 0
+        for asset in self.assets:
+            cost = asset.transaction_value()
+            total_cost += cost
+            print(f"{asset.ticker}: {asset.quantity} * ${asset.purchase_price:.2f} = ${cost:.2f}")
+        print(f"Total Cost = ${total_cost:.2f}")
+
+        print("\nCalculation for Total Value:")
+        total_value = 0
+        for asset in self.assets:
+            current_val = asset.current_value()
+            if current_val is None:
+                print(f"{asset.ticker}: current price unknown, skipping")
+                current_val = 0
+            else:
+                print(f"{asset.ticker}: {asset.quantity} * ${asset.close:.2f} = ${current_val:.2f}")
+            total_value += current_val
+        print(f"Total Value = ${total_value:.2f}")
+        
     def summary(self):
         print("Portfolio Summary:")
         for asset in self.assets:
@@ -99,5 +120,5 @@ class Portfolio:
         print_weight_table("Weights by Asset Class", self.weights_by_asset_class())
         print_weight_table("Weights by Sector", self.weights_by_sector())
 
-        print(f"\nTotal Cost: ${self.total_cost():.2f}")
-        print(f"Total Value: ${self.total_value():.2f}")
+        self.print_total_cost_and_value()
+    
