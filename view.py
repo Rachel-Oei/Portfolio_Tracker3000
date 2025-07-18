@@ -19,5 +19,17 @@ def print_asset_table(portfolio):
     for a in portfolio.assets:
         market_cap = f"${int(a.market_cap / 1_000_000_000)}B" if isinstance(a.market_cap, (int, float)) else "N/A"
         current_price = f"${a.close:.2f}" if a.close else "N/A"
-        daily_return = f"{a.daily_return:.2f}%" if a.daily_return is not None else "N/A"
+        if a.daily_return is not None:
+            if a.daily_return > 0:
+                color = "\033[92m"  # Green
+                return_str = f"+{a.daily_return:.2f}%"
+            elif a.daily_return < 0:
+                color = "\033[91m"  # Red
+                return_str = f"{a.daily_return:.2f}%"
+            else:
+                color = "\033[0m"   # Default
+                return_str = "0.00%"
+            daily_return = f"{color}{return_str}\033[0m"
+        else:
+            daily_return = "N/A"
         print(f"{a.ticker:<10} {a.asset_class:<15} {a.sector:<30} {market_cap:<10} {a.quantity:<5} ${a.purchase_price:<14.2f} {current_price:<15} {daily_return:<15}")
