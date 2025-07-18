@@ -1,3 +1,28 @@
+import matplotlib.pyplot as plt
+import yfinance as yf
+import os
+
+def plot_multiple_assets(assets, period, interval):
+    plt.figure(figsize=(12, 6))
+    
+    for asset in assets:
+        data = yf.Ticker(asset.ticker).history(period=period, interval=interval)
+        if data.empty:
+            print(f"⚠️  No data for {asset.ticker}, skipping.")
+            continue
+
+        plt.plot(data.index, data['Close'], label=asset.ticker)
+
+    plt.title(f"Historical Price Comparison ({period})")
+    plt.xlabel("Date")
+    plt.ylabel("Price (USD)")
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("historical_prices.png")
+    print("Graph saved as 'historical_prices.png'")
+    print(f"\nOpen the image manually from the sidebar or at: file://{os.path.abspath("historical_prices.png")}\n")
+
 def print_weight_table(title, weight_dict):
     print(f"\n{title}")
     print(f"{'Name':<25} {'Weight %':<10} {'Bar':<50}")
