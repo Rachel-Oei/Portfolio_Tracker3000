@@ -1,4 +1,5 @@
 import yfinance as yf
+from view import print_asset_table, print_weight_table
 
 class Asset:
     def __init__(self, ticker, quantity, purchase_price):
@@ -77,30 +78,6 @@ class Portfolio:
             weights[sector] = value_sum / total
         return weights
 
-    def print_asset_table(self):
-        print("\nCurrent Portfolio Overview:")
-        print(f"{'Ticker':<10} {'Asset Class':<15} {'Sector':<30} {'Mkt Cap':<10} {'Qty':<5} {'Purchase Price':<15} {'Current Price':<15} {'Daily Return %':<15}")
-        print("-" * 115)
-
-        for a in self.assets:
-            market_cap = f"${int(a.market_cap / 1_000_000_000)}B" if isinstance(a.market_cap, (int, float)) else "N/A"
-            current_price = f"${a.close:.2f}" if a.close else "N/A"
-            daily_return = f"{a.daily_return:.2f}%" if a.daily_return is not None else "N/A"
-            print(f"{a.ticker:<10} {a.asset_class:<15} {a.sector:<30} {market_cap:<10} {a.quantity:<5} ${a.purchase_price:<14.2f} {current_price:<15} {daily_return:<15}")
-    
-    def print_weight_table(self, title, weight_dict):
-        print(f"\n{title}")
-        print(f"{'Name':<25} {'Weight %':<10} {'Bar':<50}")
-        print("-" * 85)
-
-        colors = ["\033[90m", "\033[97m"]  # dark gray, white
-        reset = "\033[0m"
-
-        for i, (name, weight) in enumerate(sorted(weight_dict.items(), key=lambda x: -x[1])):
-            color = colors[i % 2]  # alternate color per row
-            bar = '█' * int(weight * 50)
-            print(f"{name:<25} {weight * 100:>6.2f}%   {color}{bar}{reset}")
-
     def add_assets(self):
         ticker = input("Enter the ticker: ").upper()
         quantity = int(input("Enter the quantity: "))
@@ -108,7 +85,7 @@ class Portfolio:
         asset = Asset(ticker, quantity, purchase_price)
         asset.update_close()
         self.add_asset(asset)
-        self.print_asset_table()
+        print_asset_table(self)
 
     def summary(self):
         print("Portfolio Summary:")
@@ -117,10 +94,10 @@ class Portfolio:
             market_cap = asset.market_cap if asset.market_cap is not None else 0
             daily_return = f"{asset.daily_return:.2f}%" if asset.daily_return is not None else "N/A"
 
-        self.print_asset_table()
-        self.print_weight_table("Weights by Asset", self.weights())
-        self.print_weight_table("Weights by Asset Class", self.weights_by_asset_class())
-        self.print_weight_table("Weights by Sector", self.weights_by_sector())
+        print_asset_table(self)
+        print_weight_table("Weights by Asset", self.weights())
+        print_weight_table("Weights by Asset Class", self.weights_by_asset_class())
+        print_weight_table("Weights by Sector", self.weights_by_sector())
 
         print(f"\nTotal Cost: ${self.total_cost():.2f}")
         print(f"Total Value: ${self.total_value():.2f}")
