@@ -13,7 +13,7 @@ def print_weight_table(title, weight_dict):
 
 def print_asset_table(portfolio):
     print("\nCurrent Portfolio Overview:")
-    print(f"{'Ticker':<10} {'Asset Class':<15} {'Sector':<30} {'Mkt Cap':<10} {'Qty':<5} {'Purchase Price':<15} {'Current Price':<15} {'Daily Return %':<15}")
+    print(f"{'Ticker':<10} {'Asset Class':<15} {'Sector':<30} {'Mkt Cap':<10} {'Qty':<5} {'Purchase Price':<15} {'Current Price':<15} {'Daily Return':<15}")
     print("-" * 115)
 
     for a in portfolio.assets:
