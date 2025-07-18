@@ -2,8 +2,8 @@ from models import Asset, Portfolio
 
 def add_assets(portfolio):
     while True:
-        choice = input("Do you wish to add an asset (y/n)? ").lower()
-        if choice == 'y':
+        choice = input("Menu: \n1. Add asset \n2. View portfolio").lower()
+        if choice == '1':
             ticker = input("Enter the ticker: ").upper()
             quantity = int(input("Enter the quantity: "))
             purchase_price = float(input("Enter the purchase price (USD): "))
@@ -27,12 +27,13 @@ def add_assets(portfolio):
                 print(f"{'Name':<25} {'Weight %':<10} {'Bar':<50}")
                 print("-" * 85)
 
-                colors = ["\033[90m", "\033[30m"]  # dark gray, black
+                colors = ["\033[90m", "\033[97m"]  # dark gray, white
                 reset = "\033[0m"
 
-                for name, weight in sorted(weight_dict.items(), key=lambda x: -x[1]):
-                    bar = '█' * int(weight * 50)  # 50 chars wide
-                    print(f"{name:<25} {weight * 100:>6.2f}%   {bar}")
+                for i, (name, weight) in enumerate(sorted(weight_dict.items(), key=lambda x: -x[1])):
+                    color = colors[i % 2]  # alternate color per row
+                    bar = '█' * int(weight * 50)
+                    print(f"{name:<25} {weight * 100:>6.2f}%   {color}{bar}{reset}")
             
             print_weight_table("Weights by Asset", portfolio.weights())
             print_weight_table("Weights by Asset Class", portfolio.weights_by_asset_class())
