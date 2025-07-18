@@ -1,4 +1,5 @@
 from models import Asset, Portfolio
+from view import print_asset_table, print_weight_table
 
 def main():
     portfolio = Portfolio()
@@ -19,10 +20,10 @@ def main():
             case 1:
                 portfolio.add_assets()
             case 2:
-                portfolio.print_asset_table()
-                portfolio.print_weight_table("Weights by Asset", portfolio.weights())
-                portfolio.print_weight_table("Weights by Asset Class", portfolio.weights_by_asset_class())
-                portfolio.print_weight_table("Weights by Sector", portfolio.weights_by_sector())
+                print_asset_table(portfolio)
+                print_weight_table("Weights by Asset", portfolio.weights())
+                print_weight_table("Weights by Asset Class", portfolio.weights_by_asset_class())
+                print_weight_table("Weights by Sector", portfolio.weights_by_sector())
                 portfolio.summary()
             case 3:
                 print("Thanks for using the Portfolio Tracker. Goodbye!")
