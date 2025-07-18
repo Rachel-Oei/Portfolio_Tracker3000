@@ -88,7 +88,7 @@ class Portfolio:
         print_asset_table(self)
 
     def print_total_cost_and_value(self):
-        print("\nCalculation for Total Cost:")
+        print("\nCalculation for Total Cost (Quantity * Purchase Price)")
         total_cost = 0
         for asset in self.assets:
             cost = asset.transaction_value()
@@ -96,7 +96,7 @@ class Portfolio:
             print(f"{asset.ticker}: {asset.quantity} * ${asset.purchase_price:.2f} = ${cost:.2f}")
         print(f"Total Cost = ${total_cost:.2f}")
 
-        print("\nCalculation for Total Value:")
+        print("\nCalculation for Total Value (Quantity * Current Price):")
         total_value = 0
         for asset in self.assets:
             current_val = asset.current_value()
