@@ -18,6 +18,7 @@ def plot_multiple_assets(assets, period, interval):
     plt.ylabel("Price (USD)")
     plt.grid(True)
     plt.legend()
+    plt.grid(False)
     plt.tight_layout()
     plt.savefig("historical_prices.png")
     print("Graph saved as 'historical_prices.png'")
