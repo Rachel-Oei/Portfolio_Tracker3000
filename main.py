@@ -23,10 +23,6 @@ def main():
             case 2:
                 plot_multiple_assets(portfolio.assets, period="20y", interval="1d")
             case 3:
-                print_asset_table(portfolio)
-                print_weight_table("Weights by Asset", portfolio.weights())
-                print_weight_table("Weights by Asset Class", portfolio.weights_by_asset_class())
-                print_weight_table("Weights by Sector", portfolio.weights_by_sector())
                 portfolio.summary()
             case 4:
                 print("Thanks for using the Portfolio Tracker. Goodbye!")
