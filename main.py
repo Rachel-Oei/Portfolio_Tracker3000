@@ -1,5 +1,7 @@
 from models import Asset, Portfolio
 from view import print_asset_table, print_weight_table, plot_multiple_assets
+from montecarlo import run_monte_carlo
+
 
 def main():
     portfolio = Portfolio()
@@ -9,7 +11,8 @@ def main():
         print("1. Add an asset")
         print("2. View historical prices")
         print("3. View portfolio summary")
-        print("4. Exit")
+        print("4. Run Monte Carlo simulation")
+        print("5. Exit")
 
         try:
             choice = int(input("Enter your choice: "))
@@ -25,6 +28,8 @@ def main():
             case 3:
                 portfolio.summary()
             case 4:
+                portfolio.monte_carlo_portfolio()
+            case 5:
                 print("Thanks for using the Portfolio Tracker. Goodbye!")
                 break
             case _:
