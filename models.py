@@ -88,7 +88,7 @@ class Portfolio:
         print_asset_table(self)
 
     def print_total_cost_and_value(self):
-        print("\nCalculation for Total Cost (Quantity * Purchase Price)")
+        print("\nCalculation for Total Cost (Quantity * Purchase Price):")
         total_cost = 0
         for asset in self.assets:
             cost = asset.transaction_value()
@@ -107,7 +107,7 @@ class Portfolio:
                 print(f"{asset.ticker}: {asset.quantity} * ${asset.close:.2f} = ${current_val:.2f}")
             total_value += current_val
         print(f"Total Value = ${total_value:.2f}")
-        
+
     def summary(self):
         print("Portfolio Summary:")
         for asset in self.assets:
@@ -121,4 +121,3 @@ class Portfolio:
         print_weight_table("Weights by Sector", self.weights_by_sector())
 
         self.print_total_cost_and_value()
-    
