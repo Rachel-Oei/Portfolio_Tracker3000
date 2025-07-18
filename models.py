@@ -1,5 +1,7 @@
 import yfinance as yf
 from view import print_asset_table, print_weight_table
+import numpy as np
+import pandas as pd
 
 class Asset:
     def __init__(self, ticker, quantity, purchase_price):
@@ -121,3 +123,59 @@ class Portfolio:
         print_weight_table("Weights by Sector", self.weights_by_sector())
 
         self.print_total_cost_and_value()
+
+    def monte_carlo_portfolio(self, days=252*15, total_simulations=100000, batch_size=10000):
+        if not self.assets:
+            print("Portfolio is empty, cannot run simulation.")
+            return
+
+        tickers = [asset.ticker for asset in self.assets]
+        quantities = np.array([asset.quantity for asset in self.assets])
+        
+        # Download historical price data for all tickers
+        data = yf.download(tickers, period="1y", auto_adjust=True)['Close'].dropna()
+        
+        returns = data.pct_change().dropna()
+        mu = returns.mean().values
+        cov = returns.cov().values
+        S0 = data.iloc[-1].values
+        L = np.linalg.cholesky(cov)
+
+        num_batches = total_simulations // batch_size
+        all_final_values = []
+
+        for batch in range(num_batches):
+            portfolio_values = np.zeros((days+1, batch_size))
+            portfolio_values[0, :] = np.dot(S0, quantities)
+
+            for sim in range(batch_size):
+                Z = np.random.normal(size=(days, len(tickers)))
+                correlated_Z = Z @ L.T
+                daily_returns = correlated_Z + mu
+                price_relatives = 1 + daily_returns
+                prices = np.zeros((days+1, len(tickers)))
+                prices[0] = S0
+                for t in range(1, days+1):
+                    prices[t] = prices[t-1] * price_relatives[t-1]
+                portfolio_values[:, sim] = prices @ quantities
+            
+            all_final_values.append(portfolio_values[-1])
+
+            print(f"Batch {batch + 1} of {num_batches} completed.")
+
+        all_final_values = np.concatenate(all_final_values)
+
+        summary = {
+            'mean_final_value': np.mean(all_final_values),
+            'median_final_value': np.median(all_final_values),
+            '5th_percentile': np.percentile(all_final_values, 5),
+            '95th_percentile': np.percentile(all_final_values, 95)
+        }
+        
+        print(f"After {days} trading days (~{days//252} years):")
+        print(f"Mean portfolio value: ${summary['mean_final_value']:.2f}")
+        print(f"Median portfolio value: ${summary['median_final_value']:.2f}")
+        print(f"5th percentile: ${summary['5th_percentile']:.2f}")
+        print(f"95th percentile: ${summary['95th_percentile']:.2f}")
+
+        return summary
