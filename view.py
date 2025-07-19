@@ -1,6 +1,18 @@
 import matplotlib.pyplot as plt
 import yfinance as yf
 import os
+from colorama import Fore, Style, init
+
+def print_main_menu():
+    print(Fore.BLACK + "\n" + "=" * 40)
+    print(Fore.BLACK + "PORTFOLIO TRACKER 3000 MENU".center(40))
+    print(Fore.BLACK + "=" * 40)
+    print(Fore.BLACK + "1." + Fore.WHITE + " ➕ Add an asset")
+    print(Fore.BLACK + "2." + Fore.WHITE + " 📈 View historical prices")
+    print(Fore.BLACK + "3." + Fore.WHITE + " 🧾 View portfolio summary")
+    print(Fore.BLACK + "4." + Fore.WHITE + " 🎲 Run Monte Carlo simulation")
+    print(Fore.BLACK + "5." + Fore.WHITE + " ❌ Exit")
+    print(Fore.BLACK + "=" * 40)
 
 def plot_multiple_assets(assets, period, interval):
     plt.figure(figsize=(12, 6))
@@ -8,7 +20,7 @@ def plot_multiple_assets(assets, period, interval):
     for asset in assets:
         data = yf.Ticker(asset.ticker).history(period=period, interval=interval)
         if data.empty:
-            print(f"⚠️  No data for {asset.ticker}, skipping.")
+            print(f"No data for {asset.ticker}, skipping.")
             continue
 
         plt.plot(data.index, data['Close'], label=asset.ticker)
@@ -38,7 +50,7 @@ def print_weight_table(title, weight_dict):
         print(f"{name:<25} {weight * 100:>6.2f}%   {color}{bar}{reset}")
 
 def print_asset_table(portfolio):
-    print("\nCurrent Portfolio Overview:")
+    print("\n\033[1mCurrent Portfolio Overview:\033[0m")
     print(f"{'Ticker':<10} {'Asset Class':<15} {'Sector':<30} {'Mkt Cap':<10} {'Qty':<5} {'Purchase Price':<15} {'Current Price':<15} {'Daily Return':<15}")
     print("-" * 115)
 
