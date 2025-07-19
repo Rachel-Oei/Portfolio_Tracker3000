@@ -23,7 +23,7 @@ def main():
             case 3:
                 portfolio.summary()
             case 4:
-                portfolio.monte_carlo()
+                portfolio.monte_carlo_quasi()
             case 5:
                 print("Thanks for using the Portfolio Tracker. Goodbye!")
                 break

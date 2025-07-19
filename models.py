@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from colorama import Fore, Style, init
 import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 class Asset:
     def __init__(self, ticker, quantity, purchase_price):
@@ -28,7 +30,7 @@ class Asset:
         else:
             self.daily_return = 0.0
         self.close = close_series.iloc[-1] 
-        
+
     def transaction_value(self):
         return self.quantity * self.purchase_price
 
@@ -95,7 +97,7 @@ class Portfolio:
         asset.update_close()
         self.add_asset(asset)
         print_asset_table(self)
-        
+
     def print_total_cost_and_value(self):
         print("\nCalculation for Transaction Value (Quantity * Purchase Price):")
         total_cost = 0
@@ -139,23 +141,19 @@ class Portfolio:
             print("Portfolio is empty, cannot run simulation.")
             return
 
-        # --- Get tickers and weights ---
         tickers = [asset.ticker for asset in self.assets]
         weights_dict = self.weights()
         weights_array = np.array([weights_dict[ticker] for ticker in tickers])
 
-        # --- Download historical price data ---
         data = yf.download(tickers, period="20y", auto_adjust=True)['Close'].dropna()
         if data.empty:
             print("No historical data retrieved.")
             return
 
-        # --- Compute log returns ---
         log_returns = np.log(data / data.shift(1)).dropna()
         mu = log_returns.mean().values          # Mean daily log return
         cov = log_returns.cov().values          # Covariance matrix
 
-        # --- Simulation parameters ---
         num_days = 252 * 15  # 15 years of trading days
         num_batches = total_simulations // batch_size
         cumulative_returns = []
@@ -173,21 +171,18 @@ class Portfolio:
 
         cumulative_returns = np.array(cumulative_returns)
 
-        # --- Analyze results ---
         mean_return = np.mean(cumulative_returns)
         std_dev = np.std(cumulative_returns)
         var_5 = np.percentile(cumulative_returns, 5)
+        var_95 = np.percentile(cumulative_returns, 95)
 
         print(f"\nMean simulated 15-year cumulative return: {mean_return:.2%}")
         print(f"Std deviation: {std_dev:.2%}")
         print(f"5% percentile (VaR): {var_5:.2%}")
+        print(f"95% percentile (VaR): {var_95:.2%}")
 
-        # --- Plot histogram ---
-        plt.hist(cumulative_returns, bins=100, color='skyblue', edgecolor='black', alpha=0.7)
-        plt.title("Distribution of Simulated 15-Year Portfolio Returns")
-        plt.xlabel("Cumulative Return")
-        plt.ylabel("Frequency")
-        plt.grid(True)
+        sns.kdeplot(cumulative_returns, shade=True)
+        plt.title("KDE of Simulated 15-Year Portfolio Returns")
         plt.savefig("histogram.png")
 
         return cumulative_returns
