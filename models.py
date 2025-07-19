@@ -2,6 +2,8 @@ import yfinance as yf
 from view import print_asset_table, print_weight_table
 import numpy as np
 import pandas as pd
+from colorama import Fore, Style, init
+import matplotlib.pyplot as plt
 
 class Asset:
     def __init__(self, ticker, quantity, purchase_price):
@@ -82,13 +84,18 @@ class Portfolio:
 
     def add_assets(self):
         ticker = input("Enter the ticker: ").upper()
+
+        if any(existing_asset.ticker.upper() == ticker for existing_asset in self.assets):
+            print(Fore.RED + f"\nAsset '{ticker}' is already in the portfolio. Duplicate not added." + Style.RESET_ALL)
+            return
+
         quantity = int(input("Enter the quantity: "))
         purchase_price = float(input("Enter the purchase price (USD): "))
         asset = Asset(ticker, quantity, purchase_price)
         asset.update_close()
         self.add_asset(asset)
         print_asset_table(self)
-
+        
     def print_total_cost_and_value(self):
         print("\nCalculation for Transaction Value (Quantity * Purchase Price):")
         total_cost = 0
@@ -96,7 +103,7 @@ class Portfolio:
             cost = asset.transaction_value()
             total_cost += cost
             print(f"{asset.ticker}: {asset.quantity} * ${asset.purchase_price:.2f} = ${cost:.2f}")
-        print(f"Total Cost = ${total_cost:.2f}")
+        print(f"\033[1mTotal Cost = $\033[0m{total_cost:.2f}")
 
         print("\nCalculation for Total Value (Quantity * Current Price):")
         total_value = 0
@@ -108,77 +115,79 @@ class Portfolio:
             else:
                 print(f"{asset.ticker}: {asset.quantity} * ${asset.close:.2f} = ${current_val:.2f}")
             total_value += current_val
-        print(f"Total Value = ${total_value:.2f}")
+        print(f"\033[1mTotal Value = $\033[0m{total_value:.2f}")
 
     def summary(self):
-        print("Portfolio Summary:")
         for asset in self.assets:
             weight = self.weights().get(asset.ticker, 0)
             market_cap = asset.market_cap if asset.market_cap is not None else 0
             daily_return = f"{asset.daily_return:.2f}%" if asset.daily_return is not None else "N/A"
 
         print("\n" + "="*150)
-        print("PORTFOLIO SUMMARY".center(50))
+        print("\033[1mPortfolio Summary:\033[0m")
         print_asset_table(self)
-        print_weight_table("Weights by Asset", self.weights())
-        print_weight_table("Weights by Asset Class", self.weights_by_asset_class())
-        print_weight_table("Weights by Sector", self.weights_by_sector())
+        print_weight_table("\n\033[1mWeights by Asset:\033[0m", self.weights())
+        print_weight_table("\n\033[1mWeights by Asset Class:\033[0m", self.weights_by_asset_class())
+        print_weight_table("\n\033[1mWeights by Sector:\033[0m", self.weights_by_sector())
 
         self.print_total_cost_and_value()
         print("="*150 + "\n")
-        print("Portfolio Summary successfully created! Scroll up to view.")
+        print(Fore.GREEN + Style.BRIGHT + "Portfolio Summary successfully created! Scroll up to view." + Style.RESET_ALL)
 
-    def monte_carlo_portfolio(self, days=252*15, total_simulations=100000, batch_size=10000):
+    def monte_carlo(self, total_simulations=100_000, batch_size=10_000):
         if not self.assets:
             print("Portfolio is empty, cannot run simulation.")
             return
 
+        # --- Get tickers and weights ---
         tickers = [asset.ticker for asset in self.assets]
-        quantities = np.array([asset.quantity for asset in self.assets])
-        
-        data = yf.download(tickers, period="1y", auto_adjust=True)['Close'].dropna()
-        
-        returns = data.pct_change().dropna()
-        mu = returns.mean().values
-        cov = returns.cov().values
-        S0 = data.iloc[-1].values
-        L = np.linalg.cholesky(cov)
+        weights_dict = self.weights()
+        weights_array = np.array([weights_dict[ticker] for ticker in tickers])
 
+        # --- Download historical price data ---
+        data = yf.download(tickers, period="20y", auto_adjust=True)['Close'].dropna()
+        if data.empty:
+            print("No historical data retrieved.")
+            return
+
+        # --- Compute log returns ---
+        log_returns = np.log(data / data.shift(1)).dropna()
+        mu = log_returns.mean().values          # Mean daily log return
+        cov = log_returns.cov().values          # Covariance matrix
+
+        # --- Simulation parameters ---
+        num_days = 252 * 15  # 15 years of trading days
         num_batches = total_simulations // batch_size
-        all_final_values = []
+        cumulative_returns = []
 
-        for batch in range(num_batches):
-            portfolio_values = np.zeros((days+1, batch_size))
-            portfolio_values[0, :] = np.dot(S0, quantities)
+        print(f"Running {total_simulations} simulations in {num_batches} batches...")
 
-            for sim in range(batch_size):
-                Z = np.random.normal(size=(days, len(tickers)))
-                correlated_Z = Z @ L.T
-                daily_returns = correlated_Z + mu
-                price_relatives = 1 + daily_returns
-                prices = np.zeros((days+1, len(tickers)))
-                prices[0] = S0
-                for t in range(1, days+1):
-                    prices[t] = prices[t-1] * price_relatives[t-1]
-                portfolio_values[:, sim] = prices @ quantities
-            
-            all_final_values.append(portfolio_values[-1])
+        for i in range(num_batches):
+            simulated_returns = np.random.multivariate_normal(mu, cov, size=(batch_size, num_days))
+            portfolio_daily_returns = simulated_returns @ weights_array
+            cumulative_log_returns = np.sum(portfolio_daily_returns, axis=1)
+            batch_returns = np.exp(cumulative_log_returns) - 1 #compounding because of log
+            cumulative_returns.extend(batch_returns)
 
-            print(f"Batch {batch + 1} of {num_batches} completed.")
+            print(f"Batch {i+1}/{num_batches} completed.")
 
-        all_final_values = np.concatenate(all_final_values)
+        cumulative_returns = np.array(cumulative_returns)
 
-        summary = {
-            'mean_final_value': np.mean(all_final_values),
-            'median_final_value': np.median(all_final_values),
-            '5th_percentile': np.percentile(all_final_values, 5),
-            '95th_percentile': np.percentile(all_final_values, 95)
-        }
-        
-        print(f"After {days} trading days (~{days//252} years):")
-        print(f"Mean portfolio value: ${summary['mean_final_value']:.2f}")
-        print(f"Median portfolio value: ${summary['median_final_value']:.2f}")
-        print(f"5th percentile: ${summary['5th_percentile']:.2f}")
-        print(f"95th percentile: ${summary['95th_percentile']:.2f}")
+        # --- Analyze results ---
+        mean_return = np.mean(cumulative_returns)
+        std_dev = np.std(cumulative_returns)
+        var_5 = np.percentile(cumulative_returns, 5)
 
-        return summary
+        print(f"\nMean simulated 15-year cumulative return: {mean_return:.2%}")
+        print(f"Std deviation: {std_dev:.2%}")
+        print(f"5% percentile (VaR): {var_5:.2%}")
+
+        # --- Plot histogram ---
+        plt.hist(cumulative_returns, bins=100, color='skyblue', edgecolor='black', alpha=0.7)
+        plt.title("Distribution of Simulated 15-Year Portfolio Returns")
+        plt.xlabel("Cumulative Return")
+        plt.ylabel("Frequency")
+        plt.grid(True)
+        plt.savefig("histogram.png")
+
+        return cumulative_returns
