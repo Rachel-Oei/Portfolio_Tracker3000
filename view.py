@@ -25,7 +25,7 @@ def plot_multiple_assets(assets, period, interval):
 
         plt.plot(data.index, data['Close'], label=asset.ticker)
 
-    plt.title(f"Historical Price Comparison ({period})")
+    plt.title(f"Historical Prices ({period})")
     plt.xlabel("Date")
     plt.ylabel("Price (USD)")
     plt.grid(True)
