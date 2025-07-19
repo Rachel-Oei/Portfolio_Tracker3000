@@ -9,7 +9,6 @@ def main():
 
     while True:
         print_main_menu()
-
         try:
             choice = int(input("Enter your choice: "))
         except ValueError:
@@ -24,7 +23,7 @@ def main():
             case 3:
                 portfolio.summary()
             case 4:
-                portfolio.monte_carlo_portfolio()
+                portfolio.monte_carlo()
             case 5:
                 print("Thanks for using the Portfolio Tracker. Goodbye!")
                 break
