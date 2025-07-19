@@ -13,8 +13,8 @@ class Asset:
         self.daily_return = None
         info = yf.Ticker(ticker).info
         self.name = info.get("longName", info.get("shortName", "UNKNOWN"))
-        self.asset_class = info.get("quoteType", "UNKNOWN")
         self.sector = info.get("sector", self.name) # if sector is unknown, use long/ short name of ticker
+        self.asset_class = info.get("quoteType", "UNKNOWN")
         self.market_cap = info.get("marketCap", None)
 
     def update_close(self):
@@ -22,7 +22,7 @@ class Asset:
         hist = data.history(period="max")  
         close_series = hist['Close']    
         if len(close_series) >= 2:
-            self.daily_return = (close_series.iloc[-1] - close_series.iloc[-2]) / close_series.iloc[-2] * 100
+            self.daily_return = np.log(close_series.iloc[-1] / close_series.iloc[-2]) * 100 #use log returns 
         else:
             self.daily_return = 0.0
         self.close = close_series.iloc[-1] 
@@ -90,7 +90,7 @@ class Portfolio:
         print_asset_table(self)
 
     def print_total_cost_and_value(self):
-        print("\nCalculation for Total Cost (Quantity * Purchase Price):")
+        print("\nCalculation for Transaction Value (Quantity * Purchase Price):")
         total_cost = 0
         for asset in self.assets:
             cost = asset.transaction_value()
@@ -117,12 +117,16 @@ class Portfolio:
             market_cap = asset.market_cap if asset.market_cap is not None else 0
             daily_return = f"{asset.daily_return:.2f}%" if asset.daily_return is not None else "N/A"
 
+        print("\n" + "="*150)
+        print("PORTFOLIO SUMMARY".center(50))
         print_asset_table(self)
         print_weight_table("Weights by Asset", self.weights())
         print_weight_table("Weights by Asset Class", self.weights_by_asset_class())
         print_weight_table("Weights by Sector", self.weights_by_sector())
 
         self.print_total_cost_and_value()
+        print("="*150 + "\n")
+        print("Portfolio Summary successfully created! Scroll up to view.")
 
     def monte_carlo_portfolio(self, days=252*15, total_simulations=100000, batch_size=10000):
         if not self.assets:
@@ -132,7 +136,6 @@ class Portfolio:
         tickers = [asset.ticker for asset in self.assets]
         quantities = np.array([asset.quantity for asset in self.assets])
         
-        # Download historical price data for all tickers
         data = yf.download(tickers, period="1y", auto_adjust=True)['Close'].dropna()
         
         returns = data.pct_change().dropna()
