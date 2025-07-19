@@ -1,18 +1,14 @@
 from models import Asset, Portfolio
-from view import print_asset_table, print_weight_table, plot_multiple_assets
-from montecarlo import run_monte_carlo
+from view import print_asset_table, print_weight_table, plot_multiple_assets, print_main_menu
 
+from montecarlo import run_monte_carlo
+from colorama import Fore
 
 def main():
     portfolio = Portfolio()
 
     while True:
-        print("\nWhat do you wish to do?")
-        print("1. Add an asset")
-        print("2. View historical prices")
-        print("3. View portfolio summary")
-        print("4. Run Monte Carlo simulation")
-        print("5. Exit")
+        print_main_menu()
 
         try:
             choice = int(input("Enter your choice: "))
@@ -33,7 +29,7 @@ def main():
                 print("Thanks for using the Portfolio Tracker. Goodbye!")
                 break
             case _:
-                print("Invalid choice. Please enter 1, 2, or 3.")
+                print("Invalid choice. Please enter 1, 2, 3, 4 or 5.")
 
 if __name__ == "__main__":
     main()
