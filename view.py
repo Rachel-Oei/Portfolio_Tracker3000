@@ -51,7 +51,7 @@ def print_weight_table(title, weight_dict):
 
 def print_asset_table(portfolio):
     print("\n\033[1mCurrent Portfolio Overview:\033[0m")
-    print(f"{'Ticker':<10} {'Asset Class':<15} {'Sector':<30} {'Mkt Cap':<10} {'Qty':<5} {'Purchase Price':<15} {'Current Price':<15} {'Daily Return':<15} {'Mean Daily Return 20y':<18}")
+    print(f"{'Ticker':<10} {'Asset Class':<15} {'Sector':<30} {'Mkt Cap':<10} {'Qty':<5} {'Purchase Price':<15} {'Current Price':<15} {'Daily Return':<15}")
     print("-" * 135)
 
     for a in portfolio.assets:
@@ -73,4 +73,4 @@ def print_asset_table(portfolio):
         else:
             daily_return = "N/A"
 
-        print(f"{a.ticker:<10} {a.asset_class:<15} {a.sector:<30} {market_cap:<10} {a.quantity:<5} ${a.purchase_price:<14.2f} {current_price:<15} {daily_return:<15} {mean_return_colored:<50}")
+        print(f"{a.ticker:<10} {a.asset_class:<15} {a.sector:<30} {market_cap:<10} {a.quantity:<5} ${a.purchase_price:<14.2f} {current_price:<15} {daily_return:<15}")
