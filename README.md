@@ -11,7 +11,7 @@ Welcome to this Portfolio Tracker!
 ## How to run 
 ```
 python -m pip install -r requirements.txt
-python portfolio_tracker.py
+python main.py
 ```
 ## Menu details
 1. Add assets (ticker code as in yahoo Finance).
