@@ -3,6 +3,4 @@ montecarlo
 colorama
 numpy
 pandas
-matplotlib.pyplot
-seaborn
-os
+matplotlib
