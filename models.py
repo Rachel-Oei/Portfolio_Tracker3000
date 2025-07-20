@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-
 class Asset:
     def __init__(self, ticker, quantity, purchase_price):
         self.ticker = ticker

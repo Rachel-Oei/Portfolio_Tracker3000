@@ -1,6 +1,5 @@
 from models import Asset, Portfolio
 from view import print_asset_table, print_weight_table, plot_multiple_assets, print_main_menu
-
 from montecarlo import run_monte_carlo
 from colorama import Fore
 
