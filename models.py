@@ -4,8 +4,6 @@ import numpy as np
 import pandas as pd
 from colorama import Fore, Style, init
 import matplotlib.pyplot as plt
-import seaborn as sns
-import os
 
 class Asset:
     def __init__(self, ticker, quantity, purchase_price):
@@ -180,10 +178,3 @@ class Portfolio:
         print(f"Std deviation: {std_dev:.2%}")
         print(f"5% percentile (VaR): {var_5:.2%}")
         print(f"95% percentile (VaR): {var_95:.2%}")
-
-        sns.kdeplot(cumulative_returns, shade=True)
-        plt.title("KDE of Simulated 15-Year Portfolio Returns")
-        plt.xlabel("Cumulative returns")
-        plt.savefig("KDE distribution.png")
-        print(f"\nOpen the image manually from the sidebar or at: file://{os.path.abspath("KDE distribution.png")}\n")
-        print(Fore.GREEN + Style.BRIGHT + "You successfully ran the Monte Carlo simulation! The KDE distribution can now be viewed." + Style.RESET_ALL)
