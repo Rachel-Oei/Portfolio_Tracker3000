@@ -34,7 +34,6 @@ python main.py
 - Runs 100,000 simulations as 10 batches of 10,000 to reduce computational effort.
 - Assumes multivariate normal distribution. 
 - Returns the mean cumulative returns, standard deviation and 5% VaR. 
-- Generates a kernal density plot in .png to view the distribution of cumulative returns. 
 
 ## Other portfolio trackers / inspiration
 - cliStocksTracker, rtscli, CodeAlpha_Stock_Portfolio_Tracker 
