@@ -34,7 +34,6 @@ def plot_multiple_assets(assets, period, interval):
     plt.tight_layout()
     plt.savefig("historical_prices.png")
     print("Graph saved as 'historical_prices.png'")
-    print(f"\nOpen the image manually from the sidebar or at: file://{os.path.abspath("historical_prices.png")}\n")
 
 def print_weight_table(title, weight_dict):
     print(f"\n{title}")
